@@ -1,0 +1,40 @@
+name: Build EXE
+
+on:
+  # 当推送到 main 分支时触发工作流
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      # 检出代码
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      # 设置 Python 环境
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.9
+
+      # 安装依赖
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pyinstaller ttkbootstrap
+
+      # 使用 PyInstaller 打包
+      - name: Build EXE
+        run: |
+          pyinstaller --onefile File-classifier_v16.py
+
+      # 上传打包好的文件作为工件
+      - name: Upload artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: File-classifier_v16-exe
+          path: dist/File-classifier_v16.exe
